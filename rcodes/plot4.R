@@ -1,0 +1,25 @@
+dataset=read.table("household_power_consumption.txt",header=TRUE,sep=";",na.strings="?",nrow=69516,stringsAsFactors=FALSE)
+dataset=dataset[66637:69516,]
+dataset$Global_active_power=sapply(dataset$Global_active_power,as.numeric)
+dataset$Global_reactive_power=sapply(dataset$Global_reactive_power,as.numeric)
+dataset$Voltage=sapply(dataset$Voltage,as.numeric)
+dataset$Global_intensity =sapply(dataset$Global_intensity ,as.numeric)
+dataset$Sub_metering_1 =sapply(dataset$Sub_metering_1,as.numeric)
+dataset$Sub_metering_2 =sapply(dataset$Sub_metering_2,as.numeric)
+dates=dataset$Date
+times=dataset$Time
+datesandtimes=paste(dates,times)
+dataset1=cbind(dataset,datesandtimes)
+dataset1$datesandtimes=strptime(dataset1$datesandtimes, "%d/%m/%Y %H:%M:%S")
+dataset1$datesandtimes=as.POSIXct(dataset1$datesandtimes)
+png(file="plot4.png")
+
+par(mfrow=c(2,2))
+with(dataset1,{plot(datesandtimes,Global_active_power,type="l",ylab="Global Active Power(kilowatts)",xlab="")
+               plot(datesandtimes,Voltage,type="l",xlab="datetime")
+               plot(datesandtimes,Sub_metering_1,type="l",ylab="Energy sub metering",xlab="")
+               lines(datesandtimes,Sub_metering_2,col="red")
+               lines(datesandtimes,Sub_metering_3,col="blue")
+               legend("topright", lty=1, col = c("black","red", "blue"), legend = c("Sub_metering_1", "Sub_metering_2","Sub_metering_3"))
+               plot(datesandtimes,Global_reactive_power,type="l",xlab="datetime")})
+dev.off()
